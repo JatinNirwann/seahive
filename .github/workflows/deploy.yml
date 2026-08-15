@@ -1,0 +1,94 @@
+name: Deploy to GitHub Pages
+
+# Builds the static export and publishes it to seahivefreight.com.
+#
+# The site is served from an apex custom domain, so it lives at the ROOT and
+# NEXT_PUBLIC_BASE_PATH must stay unset. Setting it here is the one change that
+# breaks the site without breaking the build: every script, style and video
+# would be requested from /<repo>/..., which does not exist, and this workflow
+# would still go green over a blank page.
+#
+# The custom domain itself comes from public/CNAME, which Next copies into
+# out/ — keeping it in the artifact means the domain survives every deploy
+# rather than depending on a setting somebody has to remember.
+
+on:
+  push:
+    branches:
+      - production
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Let a running deploy finish rather than cancelling it mid-publish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Unit tests
+        run: npm test
+
+      # Both values are public by design — they are compiled into the bundle
+      # every visitor downloads, and the anon key authorises nothing:
+      # rate_requests has RLS on with no policies, so it cannot read a single
+      # enquiry. They are repo variables rather than literals so the Supabase
+      # project can be swapped without a code change.
+      #
+      # Set them at Settings → Secrets and variables → Actions → Variables.
+      # If they are missing the build still succeeds and the site still
+      # deploys; the form then prints the composed request instead of sending
+      # it, which is the honest failure but a quiet one.
+      - name: Build static export
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: npm run build
+
+      # Pages serves the artifact as-is and does not run Jekyll; without this
+      # it would drop the _next directory, because Jekyll ignores underscore
+      # prefixes.
+      - run: touch out/.nojekyll
+
+      # ONE-TIME SETUP: Settings → Pages → Build and deployment → Source →
+      # GitHub Actions. Until that is done every run fails here with
+      # "Create Pages site failed: Resource not accessible by integration".
+      #
+      # `enablement: true` was tried and does not work: the workflow's own
+      # GITHUB_TOKEN is not allowed to create a Pages site, only to publish to
+      # one that already exists. So the first enable is a human step, once.
+      #
+      # This step is deliberately not guarded. An earlier version skipped
+      # publishing when Pages was missing, because the repo was private and
+      # Pages is not offered on private repos on the Free plan — that reason is
+      # gone now, and a silent skip would only hide a broken deploy.
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,280 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Tokens.
+
+   Tailwind v4 is CSS-first: there is no tailwind.config.ts. Every token the
+   site uses is declared once here and consumed as a named utility
+   (bg-ink, text-salt, font-data). No arbitrary hex values in JSX.
+--------------------------------------------------------------------------- */
+
+@theme {
+  /* Palette ---------------------------------------------------------------
+     Cold luxury: a neutral near-white ground, graphite ink, and one deep
+     marine accent. Deliberately monochrome plus a single pop.
+
+     The palette this replaced ran two saturated accents at once — a bright
+     aqua and a bright amber — over a blue-green navy, with body text tinted
+     mint. Saturated accent pairs on a tinted ground is the combination that
+     reads cheap, and tinted body copy is the tell that gives it away. Every
+     text tone here is a true neutral; the only chroma on the page is the
+     accent and the mark itself. */
+  --color-paper: #f6f7f7; /* ground. the site is light. */
+  --color-surface: #ffffff; /* raised panels, cells, inputs */
+  --color-ink: #13181a; /* headlines and body — 16.3:1 on paper */
+  --color-graphite: #3a4347; /* muted text — 9.6:1 on paper, and still clear
+     of AA over the video backdrop, where a lighter muted tone is not */
+  --color-mist: #e3e7e8; /* hairlines, borders, rules */
+  --color-mist-deep: #cdd4d6; /* stronger rules, input borders */
+  --color-marine: #0b4a63; /* the single accent — 8.8:1 on paper */
+  --color-marine-deep: #07364a; /* hover and active */
+
+  /* Type ----------------------------------------------------------------- */
+  --font-display: var(--font-archivo), "Arial Black", system-ui, sans-serif;
+  --font-body: var(--font-archivo), system-ui, sans-serif;
+  --font-data: var(--font-plex-mono), ui-monospace, "SFMono-Regular", monospace;
+
+  /* Scale — 1.25 ratio, fluid via clamp() -------------------------------- */
+  --text-display-1: clamp(2.75rem, 7vw, 5.5rem);
+  --text-display-1--line-height: 0.95;
+  --text-display-1--letter-spacing: -0.025em;
+  --text-display-1--font-weight: 800;
+
+  --text-display-2: clamp(2rem, 4.5vw, 3.5rem);
+  --text-display-2--line-height: 1.05;
+  --text-display-2--letter-spacing: -0.02em;
+  --text-display-2--font-weight: 700;
+
+  --text-body-lg: clamp(1.05rem, 1.4vw, 1.25rem);
+  --text-body-lg--line-height: 1.6;
+
+  --text-body: 1rem;
+  --text-body--line-height: 1.65;
+
+  --text-data: 0.875rem;
+  --text-data--line-height: 1.5;
+  --text-data--letter-spacing: 0.02em;
+
+  --text-eyebrow: 0.75rem;
+  --text-eyebrow--line-height: 1.4;
+  --text-eyebrow--letter-spacing: 0.14em;
+
+  /* Layout --------------------------------------------------------------- */
+  --spacing-shell: 90rem; /* 1440px */
+}
+
+/* ---------------------------------------------------------------------------
+   Base
+--------------------------------------------------------------------------- */
+
+html {
+  background-color: var(--color-paper);
+  /* Lenis drives scrolling; native smooth behaviour would fight it. */
+  scroll-behavior: auto;
+}
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+/* Archivo carries a wdth axis (62–125). "Archivo Expanded" is not a separate
+   family — it is this face at the top of that axis. Display type takes it;
+   body type stays at normal width. */
+.font-expanded {
+  font-stretch: 125%;
+  font-variation-settings: "wdth" 125;
+}
+
+/* Keyboard focus is visible everywhere, in the accent, at every viewport.
+   Marine measures 8.8:1 against Paper, so one outline colour serves the whole
+   page — there is no second ground to special-case any more. */
+:focus-visible {
+  outline: 2px solid var(--color-marine);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+::selection {
+  background-color: var(--color-marine);
+  color: var(--color-surface);
+}
+
+/* ---------------------------------------------------------------------------
+   Layout helpers
+--------------------------------------------------------------------------- */
+
+.shell {
+  width: 100%;
+  max-width: var(--spacing-shell);
+  margin-inline: auto;
+  padding-inline: 1rem; /* 16px gutter, mobile */
+}
+
+@media (min-width: 768px) {
+  .shell {
+    padding-inline: 1.5rem; /* 24px gutter, desktop */
+  }
+}
+
+/* A real honeycomb.
+
+   Pointy-top hexagons, height = width × 2/√3. Rows overlap by a quarter of a
+   cell's height and every other row shifts half a cell sideways, which is what
+   makes the cells interlock and share edges instead of floating as tiles with
+   the corners cut off.
+
+   The usable text area of a pointy-top hexagon is the middle half of its
+   height, where the shape is at full width. Copy is written to fit that band. */
+.hex-grid {
+  --hex-w: 17rem;
+  --hex-h: calc(var(--hex-w) * 1.1547);
+  --hex-gap: 0.5rem;
+  /* Row pitch: three quarters of a cell, which is what makes the rows nest. */
+  --hex-pitch: calc(var(--hex-h) * 0.75 + var(--hex-gap) * 0.5);
+
+  position: relative;
+  width: calc(var(--hex-w) * 2.5 + var(--hex-gap) * 2);
+  height: calc(var(--hex-h) + var(--hex-pitch) * 2);
+}
+
+/* Each cell is placed rather than flowed. Laying the comb out with rows of
+   wrappers would either nest the list (three sublists of 2, 2 and 1, which is
+   what a screen reader would then announce) or need `display: contents`, which
+   silently breaks sibling selectors. Placing five cells keeps the markup one
+   flat list of five services. */
+.hex-cell {
+  position: absolute;
+  width: var(--hex-w);
+  height: var(--hex-h);
+  left: calc((var(--hex-w) + var(--hex-gap)) * var(--hex-x));
+  top: calc(var(--hex-pitch) * var(--hex-y));
+  transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.hex-cell:hover,
+.hex-cell:focus-within {
+  transform: translateY(-8px);
+}
+
+/* The edge glow has to live inside the clip. A hexagon's clip-path removes
+   anything painted outside it, box-shadow included, so the lit edge is a
+   second clipped layer showing through beneath the face rather than a shadow
+   cast around it. */
+.hex-shell {
+  width: 100%;
+  height: 100%;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  background-color: var(--color-mist-deep);
+  transition: background-color 0.35s ease;
+}
+
+.hex-cell:hover .hex-shell,
+.hex-cell:focus-within .hex-shell {
+  background-color: var(--color-marine);
+}
+
+.hex-face {
+  position: absolute;
+  inset: 1.5px;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+/* Between the honeycomb breakpoint and the wide layout the comb shares its row
+   with the section intro, so the cells shrink to fit the eight columns they
+   are given rather than pushing the page into horizontal scroll. */
+@media (min-width: 64rem) and (max-width: 79.9375rem) {
+  .hex-grid {
+    --hex-w: 13rem;
+  }
+}
+
+/* Below the honeycomb breakpoint the cells become a single column, meeting
+   point to point rather than interlocking. A staircase of offset hexagons does
+   not survive a 360px viewport. */
+@media (max-width: 63.9375rem) {
+  .hex-grid {
+    --hex-w: min(20rem, 84vw);
+
+    position: static;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: auto;
+  }
+
+  .hex-cell {
+    position: static;
+  }
+
+  .hex-cell + .hex-cell {
+    margin-top: var(--hex-gap);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Motion
+
+   Reveal targets start fully visible. GSAP hides them only once it has
+   confirmed motion is allowed, so the page is complete if JavaScript fails,
+   is still loading, or the reader has asked for reduced motion.
+--------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* The preloader curtain. No spinner and no percentage counter — the mark
+   drawing itself in is the loading state. The lift is pure CSS so it cannot be
+   left stuck closed by a JavaScript failure. */
+.ripple-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background-color: var(--color-paper);
+  animation: ripple-curtain-lift 0.6s cubic-bezier(0.4, 0, 0.2, 1) 1.15s
+    forwards;
+}
+
+@keyframes ripple-curtain-lift {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ripple-curtain {
+    animation: none;
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* Three layers, compared in the root stacking context.
+
+   Backdrop plates (0) → ripple (1) → text and controls (2).
+
+   Nothing between them may create a stacking context, or the ripple ends up
+   trapped behind a section's own backdrop. That means `.page` and the sections
+   stay at `z-index: auto`, and only these three utilities carry a z-index. */
+.layer-plate {
+  z-index: 0;
+}
+
+.layer-content {
+  position: relative;
+  z-index: 2;
+}

@@ -1,0 +1,42 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    // `node --test` strips types rather than compiling, so test files must
+    // import with the .ts extension the runtime actually resolves.
+    "allowImportingTsExtensions": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  // The Edge Function entrypoint runs on Deno: it imports `jsr:` specifiers
+  // and uses the Deno global, neither of which this config can resolve. Deno
+  // type-checks it at deploy time instead. Its siblings `schema.ts` and
+  // `copy.ts` carry the logic and the strings, are imported by the app, and
+  // stay checked here on purpose.
+  "exclude": ["node_modules", "supabase/functions/rate-request/index.ts"]
+}
