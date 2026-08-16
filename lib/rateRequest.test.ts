@@ -88,6 +88,31 @@ test("strips control characters that would let a value forge a header", () => {
   assert.ok(!headerSafe(result.value.lane).includes("\n"));
 });
 
+test("strips every control character, and nothing that is not one", () => {
+  // The C0/C1 ranges, one representative each, plus the two that must survive.
+  const controls = "\u0000\u0007\u000B\u000C\u001B\u007F\u0085\u009F";
+  const result = validateRateRequest({
+    ...valid,
+    commodity: `Cotton${controls} yarn`,
+  });
+  assert.equal(result.ok, true);
+  if (!result.ok) return;
+  assert.equal(result.value.commodity, "Cotton yarn");
+
+  // The regression this guards: a mangled character class once left a bare
+  // hyphen in the set, so the endpoint silently ate hyphens out of real
+  // enquiries. Punctuation a shipper actually types must come through whole.
+  const punctuation = validateRateRequest({
+    ...valid,
+    lane: "Jebel Ali - Dubai (AEJEA), re-export",
+    notes: "Two lines\nsecond line\tafter a tab",
+  });
+  assert.equal(punctuation.ok, true);
+  if (!punctuation.ok) return;
+  assert.equal(punctuation.value.lane, "Jebel Ali - Dubai (AEJEA), re-export");
+  assert.equal(punctuation.value.notes, "Two lines\nsecond line\tafter a tab");
+});
+
 test("headerSafe flattens and caps", () => {
   assert.equal(headerSafe("a\r\n\r\nb"), "a b");
   assert.equal(headerSafe("x".repeat(400)).length, 120);

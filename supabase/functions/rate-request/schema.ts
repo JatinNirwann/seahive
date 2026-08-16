@@ -132,15 +132,38 @@ export function validateRateRequest(input: unknown): ValidationResult {
   return errors.length ? { ok: false, errors } : { ok: true, value };
 }
 
+/**
+ * Everything in C0/C1 except newline and tab, as code point ranges.
+ *
+ * Deliberately integers rather than a regex character class. The class this
+ * replaces was spelled with \uXXXX escapes, and those do not survive every
+ * route this file takes to the Deno runtime. Deployed through a JSON API the
+ * DEL and C1 half was silently dropped and its hyphen left behind as a
+ * literal, so the endpoint stripped hyphens out of every enquiry instead of
+ * control characters. Integers cannot be mangled that way, and the intent is
+ * legible without counting backslashes.
+ */
+const CONTROL_RANGES: ReadonlyArray<readonly [number, number]> = [
+  [0x00, 0x08],
+  [0x0b, 0x0c],
+  [0x0e, 0x1f],
+  [0x7f, 0x9f],
+];
+
+const isControl = (code: number): boolean =>
+  CONTROL_RANGES.some(([low, high]) => code >= low && code <= high);
+
 /** Trim, collapse control characters, and normalise newlines. */
 function clean(text: string): string {
-  return text
-    .replace(/\r\n?/g, "\n")
-    // Everything in C0/C1 except newline and tab. Header injection needs CR or
-    // LF in a single-line value; the multi-line notes field keeps its newlines
-    // because it is only ever placed in a body.
-    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F]/g, "")
-    .trim();
+  // Header injection needs CR or LF in a single-line value; the multi-line
+  // notes field keeps its newlines because it is only ever placed in a body.
+  const normalised = text.replace(/\r\n?/g, "\n");
+  let out = "";
+  for (const character of normalised) {
+    const code = character.codePointAt(0);
+    if (code === undefined || !isControl(code)) out += character;
+  }
+  return out.trim();
 }
 
 /**
