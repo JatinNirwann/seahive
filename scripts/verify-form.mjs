@@ -58,7 +58,7 @@ const fill = async (values) => {
 const SAMPLE = {
   "req-name": "Rehan Textiles",
   "req-email": "ops@rehantextiles.example",
-  "req-lane": "INNSA to AEJEA",
+  "req-lane": "Jebel Ali",
   "req-commodity": "Cotton yarn, 25 kg bags",
   "req-volume": "2 x 40ft",
   "req-timeline": "Late March",

@@ -13,6 +13,7 @@
     "standalone": "node scripts/build-standalone.mjs",
     "verify:standalone": "node scripts/verify-standalone.mjs out/standalone.html",
     "verify:backdrop": "node scripts/verify-backdrop.mjs",
+    "verify:loop": "node scripts/verify-loop.mjs",
     "verify:connection": "node scripts/verify-connection.mjs",
     "verify:form": "node scripts/verify-form.mjs"
   },

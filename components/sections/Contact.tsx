@@ -9,7 +9,7 @@ import {
   type Ref,
 } from "react";
 import Section from "@/components/ui/Section";
-import { CONTACT_INTRO } from "@/content/copy";
+import { COMPANY, CONTACT_INTRO } from "@/content/copy";
 import {
   ENDPOINT,
   FIELDS,
@@ -130,6 +130,21 @@ export default function Contact() {
           <p data-reveal className="mt-6 max-w-[40ch] text-body-lg text-graphite">
             {CONTACT_INTRO.body}
           </p>
+
+          {/* A form is a barrier for anyone who wants to attach a packing list
+              or just ask a question, so the address is offered beside it
+              rather than buried in the footer. */}
+          <p data-reveal className="mt-8 border-t border-mist-deep pt-6">
+            <span className="block font-data text-eyebrow uppercase text-graphite">
+              {CONTACT_INTRO.emailLabel}
+            </span>
+            <a
+              href={`mailto:${COMPANY.email}`}
+              className="mt-2 inline-flex min-h-11 items-center font-data text-data text-marine transition-colors hover:text-marine-deep"
+            >
+              {COMPANY.email}
+            </a>
+          </p>
         </div>
 
         <div className="col-span-12 lg:col-span-7 lg:col-start-6">
@@ -160,9 +175,9 @@ export default function Contact() {
               <Field
                 id="req-lane"
                 name="lane"
-                label="Origin & destination"
-                hint="Place names or port codes"
-                placeholder="INNSA to AEJEA"
+                label="Destination"
+                hint="Place name or port code"
+                placeholder="Jebel Ali"
                 required
                 error={errorFor("lane")}
               />

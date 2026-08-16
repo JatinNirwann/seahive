@@ -77,11 +77,35 @@ The two Supabase values are repo variables, not code. Without them the site
 still deploys and the form silently falls back to printing requests instead of
 sending them.
 
-Backdrop clips are made to loop by `scripts/loop-videos.mjs --pingpong`. That
-script is **not idempotent** — pass clip names when re-running it, or it
-processes already-processed footage. Swapping a clip usually means retuning
-that clip's `wash` in `content/backdrops.ts`; `npm run verify:backdrop`
-measures whether text still clears AA over it.
+## Backdrop clips
+
+**The clips must loop in the generator, not in ffmpeg.** Generate on
+`seedance_2_5` with the *same* still passed as both `start_image` and
+`end_image`, so the clip closes on the frame it opened with. Then
+`node scripts/encode-video.mjs <dir>` and nothing else — no loop
+post-processing step exists any more, and re-adding one is how this broke
+twice:
+
+- Crossfading the tail into the head removes the hard cut but replaces it with
+  a dissolve arriving on a fixed beat, which is its own thing to notice.
+- Ping-pong — forward then reversed — has no join at all, and the client
+  spotted the reversal immediately. Cloud and water do have a direction a
+  viewer can name.
+
+`npm run verify:loop` measures both defects and is the check to run after any
+clip changes. It compares the wrap against the clip's own frame-to-frame step,
+and searches for a turning point to catch reversal. Note it measures motion,
+not frame identity: re-encoding a ping-pong at a different frame rate resamples
+the timeline and defeats the obvious "is frame k the same as frame k from the
+end" test while leaving the reversal fully visible.
+
+To re-grade a clip whose ungraded source is lost, invert the encoder's grade
+first — `eq=contrast=0.740741:brightness=0.044444:saturation=1/S` — or the
+grade lands twice.
+
+Swapping a clip usually means retuning that clip's `wash` in
+`content/backdrops.ts`; `npm run verify:backdrop` measures whether text still
+clears AA over it.
 
 ## Commands
 
@@ -90,6 +114,7 @@ npm run dev       # dev server
 npm run build     # static export to out/
 npm test          # wave geometry, motion architecture, rate-request rules
 npm run verify    # drives real Chromium: contrast, LCP, JS weight, a11y
+npm run verify:loop   # backdrop clips: seam at the wrap, and reversal
 npm run verify:form   # the rate request form: payload, every response path
 ```
 

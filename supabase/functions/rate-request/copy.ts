@@ -83,7 +83,7 @@ export function acknowledgement(
 <p style="margin:0 0 16px;">Our commercial team will review your requirement and come back to you shortly with a rate plan.</p>
 <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="font:inherit;border-collapse:collapse;">
 ${row("Reference", reference)}
-${row("Lane", lane)}
+${row("Destination", lane)}
 </table>
 <p style="margin:20px 0 0;">Quote your reference in any follow-up and we will find your file immediately.</p>
 <p style="margin:24px 0 0;padding-top:18px;border-top:1px solid #e3e7e8;font-size:13px;color:#3a4347;">
@@ -99,7 +99,7 @@ Replies to this message reach us at <a href="mailto:${escapeHtml(replyTo)}" styl
     "Our commercial team will review your requirement and come back to you shortly with a rate plan.",
     "",
     `Reference: ${reference}`,
-    `Lane: ${lane}`,
+    `Destination: ${lane}`,
     "",
     "Quote your reference in any follow-up and we will find your file immediately.",
     "",

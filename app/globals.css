@@ -132,22 +132,27 @@ body {
    The usable text area of a pointy-top hexagon is the middle half of its
    height, where the shape is at full width. Copy is written to fit that band. */
 .hex-grid {
-  --hex-w: 17rem;
+  /* Sized so three cells plus two gaps fit the eight columns the comb shares
+     with the section intro. The flower is three cells wide where the old
+     stepped comb was two and a half, so this came down from 17rem. */
+  --hex-w: 15rem;
   --hex-h: calc(var(--hex-w) * 1.1547);
   --hex-gap: 0.5rem;
   /* Row pitch: three quarters of a cell, which is what makes the rows nest. */
   --hex-pitch: calc(var(--hex-h) * 0.75 + var(--hex-gap) * 0.5);
 
   position: relative;
-  width: calc(var(--hex-w) * 2.5 + var(--hex-gap) * 2);
+  /* Three cells wide: the middle row of the flower is the widest, and the
+     rows above and below inset by half a cell. */
+  width: calc(var(--hex-w) * 3 + var(--hex-gap) * 2);
   height: calc(var(--hex-h) + var(--hex-pitch) * 2);
 }
 
 /* Each cell is placed rather than flowed. Laying the comb out with rows of
    wrappers would either nest the list (three sublists of 2, 2 and 1, which is
    what a screen reader would then announce) or need `display: contents`, which
-   silently breaks sibling selectors. Placing five cells keeps the markup one
-   flat list of five services. */
+   silently breaks sibling selectors. Placing the cells keeps the markup one
+   flat list of seven services. */
 .hex-cell {
   position: absolute;
   width: var(--hex-w);
@@ -190,7 +195,7 @@ body {
    are given rather than pushing the page into horizontal scroll. */
 @media (min-width: 64rem) and (max-width: 79.9375rem) {
   .hex-grid {
-    --hex-w: 13rem;
+    --hex-w: 12rem;
   }
 }
 

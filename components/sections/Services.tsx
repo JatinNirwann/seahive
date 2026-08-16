@@ -4,27 +4,37 @@ import { SERVICES } from "@/content/services";
 import { SERVICES_INTRO } from "@/content/copy";
 
 /**
- * Column and row for each cell, in cell widths and row pitches. Two, two, one
- * — the comb steps down and to the right rather than sitting as a block.
+ * Column and row for each cell, in cell widths and row pitches.
+ *
+ * Two, three, two — the hexagonal flower, a hexagon built out of hexagons.
+ * It is the only arrangement of seven that closes on itself, and seven is
+ * already this site's number: seven waves in the mark, seven paths in the
+ * ripple.
+ *
+ * The count follows the services, not the other way round. If a service is
+ * ever removed, change this to the arrangement that suits the new count rather
+ * than inventing a service to keep the shape.
  */
 const CELL_POSITIONS: [number, number][] = [
-  [0, 0],
-  [1, 0],
-  [0.5, 1],
-  [1.5, 1],
-  [1, 2],
+  [0.5, 0],
+  [1.5, 0],
+  [0, 1],
+  [1, 1],
+  [2, 1],
+  [0.5, 2],
+  [1.5, 2],
 ];
 
 /**
  * The honeycomb.
  *
  * A real tessellation — rows interlock and cells share edges — because the
- * hive is the network, not an icon set. Two rows of two and a single cell
- * below, so the grid steps rather than sitting in a block.
+ * hive is the network, not an icon set. Seven cells as two, three, two: the
+ * comb closes into a hexagon of hexagons rather than trailing off.
  *
  * The list is a `<ul>` under the geometry. Screen readers and keyboard users
- * get five list items in reading order; the hexagons are how it looks, not
- * what it is.
+ * get seven list items in reading order — top pair, middle row left to right,
+ * bottom pair; the hexagons are how it looks, not what it is.
  */
 export default function Services() {
   return (

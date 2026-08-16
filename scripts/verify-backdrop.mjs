@@ -25,7 +25,19 @@ const WIDTH = 1440;
 const HEIGHT = 900;
 
 /** Scroll positions, as a share of the document, covering all three clips. */
-const STOPS = [0, 0.2, 0.45, 0.7, 0.92];
+/**
+ * Where to stop and sample, as fractions of the document.
+ *
+ * These were five hand-picked points, and that made the check a function of
+ * page length rather than of the page: adding two services shifted every
+ * section relative to the stops and immediately surfaced four failing blocks in
+ * the process list that had simply never been sampled before. Anything falling
+ * between stops was unmeasured and reported as a pass.
+ *
+ * Stepping every 5% overlaps viewports at any realistic page height, so a text
+ * block has to be measured at least once wherever it sits.
+ */
+const STOPS = Array.from({ length: 20 }, (_, i) => i * 0.05);
 
 const srgbToLinear = (c) => {
   const s = c / 255;

@@ -31,6 +31,15 @@ export default function Footer() {
           <p className="font-data text-eyebrow uppercase text-graphite">
             {FOOTER.place}
           </p>
+          {/* The only way to reach Seahive without filling in the form. It is
+              a real mailto rather than plain text, because the visitor most
+              likely to use it is on a phone. */}
+          <a
+            href={`mailto:${COMPANY.email}`}
+            className="inline-flex min-h-11 items-center font-data text-data text-marine transition-colors hover:text-marine-deep"
+          >
+            {COMPANY.email}
+          </a>
         </div>
 
         <div className="mt-16 flex flex-col items-center gap-4 border-t border-mist-deep pt-8 sm:flex-row sm:justify-between">

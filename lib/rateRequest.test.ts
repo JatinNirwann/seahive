@@ -25,7 +25,7 @@ import {
 const valid = {
   name: "Rehan Textiles",
   email: "ops@rehantextiles.example",
-  lane: "INNSA to AEJEA",
+  lane: "Jebel Ali",
   commodity: "Cotton yarn, 25 kg bags",
   volume: "2 x 40ft",
   readyDate: "Late March",
@@ -37,7 +37,7 @@ test("accepts a complete request and returns it trimmed", () => {
   assert.equal(result.ok, true);
   if (!result.ok) return;
   assert.equal(result.value.name, "Rehan Textiles");
-  assert.equal(result.value.lane, "INNSA to AEJEA");
+  assert.equal(result.value.lane, "Jebel Ali");
 });
 
 test("notes are the only optional field", () => {
@@ -78,7 +78,7 @@ test("rejects oversized fields rather than truncating them", () => {
 test("strips control characters that would let a value forge a header", () => {
   const result = validateRateRequest({
     ...valid,
-    lane: "INNSA to AEJEA\r\nBcc: victim@example.com",
+    lane: "Jebel Ali\r\nBcc: victim@example.com",
   });
   assert.equal(result.ok, true);
   if (!result.ok) return;
@@ -118,7 +118,7 @@ test("the acknowledgement echoes only the reference and the lane", () => {
   const marker = "UNIQUEMARKERSTRING";
   const customer = acknowledgement(
     "SHF-00042",
-    "INNSA to AEJEA",
+    "Jebel Ali",
     "info@example.com",
   );
 
@@ -134,7 +134,7 @@ test("the acknowledgement echoes only the reference and the lane", () => {
   }
 
   assert.ok(customer.html.includes("SHF-00042"));
-  assert.ok(customer.text.includes("INNSA to AEJEA"));
+  assert.ok(customer.text.includes("Jebel Ali"));
 });
 
 test("the acknowledgement says it is machine-generated", () => {

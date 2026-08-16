@@ -13,6 +13,13 @@ export const COMPANY = {
   legalName: "Seahive Freight Private Limited",
   shortName: "Seahive Freight",
   base: "Delhi NCR, India",
+  /**
+   * The only contact address on the page, and the one the rate request form's
+   * acknowledgement sets as its reply-to — so a customer who replies to the
+   * automated mail and a customer who reads the footer both arrive in the same
+   * inbox. Change it here and in the MAIL_REPLY_TO function secret together.
+   */
+  email: "info@seahivefreight.com",
 };
 
 export const HERO = {
@@ -74,6 +81,8 @@ export const CONTACT_INTRO = {
   eyebrow: "Request a rate",
   heading: "Ready to move your cargo?",
   body: "Provide us with your shipment details, and our commercial team will deliver a comprehensive, competitive rate plan tailored to your exact requirements.",
+  /** For anyone who would rather write than fill in a form. */
+  emailLabel: "Or email us directly",
 };
 
 export const FOOTER = {

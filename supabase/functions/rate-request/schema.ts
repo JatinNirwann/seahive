@@ -39,7 +39,10 @@ export interface FieldSpec {
 export const FIELDS: FieldSpec[] = [
   { key: "name", label: "Name / company", max: 120, required: true },
   { key: "email", label: "Email", max: 200, required: true, email: true },
-  { key: "lane", label: "Origin & destination", max: 160, required: true },
+  // The key stays `lane` because it is the column name on a table that already
+  // holds requests; only what the enquirer and Seahive read has changed. Every
+  // shipment leaves India, so asking for the origin was asking for a constant.
+  { key: "lane", label: "Destination", max: 160, required: true },
   { key: "commodity", label: "Commodity", max: 200, required: true },
   { key: "volume", label: "Volume", max: 120, required: true },
   { key: "readyDate", label: "Target readiness date", max: 80, required: true },

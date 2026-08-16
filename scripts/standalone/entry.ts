@@ -392,25 +392,6 @@ if (!reduced) {
     });
   }
 
-  // Desktop only, matching the site: no scroll pinning on touch.
-  const track = document.querySelector<HTMLElement>("#lanes .flex.flex-col");
-  const pinned = track?.parentElement?.parentElement;
-  if (track && pinned && window.matchMedia("(min-width: 1024px) and (pointer: fine)").matches) {
-    const distance = () => Math.max(0, track.scrollWidth - window.innerWidth + 96);
-    gsap.to(track, {
-      x: () => -distance(),
-      ease: "none",
-      scrollTrigger: {
-        trigger: pinned,
-        start: "top top",
-        end: () => `+=${distance()}`,
-        pin: true,
-        scrub: 0.6,
-        anticipatePin: 1,
-        invalidateOnRefresh: true,
-      },
-    });
-  }
 }
 
 /* ── The rate request form ──────────────────────────────────────────────── */

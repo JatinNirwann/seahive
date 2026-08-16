@@ -5,6 +5,13 @@
  * index of each entry is the band of the page it plays over, so the sequence
  * reads sky, road, sea as the reader descends.
  *
+ * Each clip loops natively: it was generated with the same still passed as
+ * both the first and the last frame, so it closes on the picture it opened
+ * with and `<video loop>` has nothing to cut across. Do not add an ffmpeg
+ * looping pass on top — a crossfade puts a dissolve on a fixed beat, and a
+ * ping-pong reverses the motion, which is what shipped before and what the
+ * client rejected. `npm run verify:loop` measures both.
+ *
  * A note for whoever replaces these. Every clip here is generated, and
  * generated freight equipment is the one thing `BRIEF.md` rules out by name —
  * wrong door hardware, impossible wheel counts, invented airline liveries. The
@@ -57,7 +64,7 @@ export const BACKDROPS: Backdrop[] = [
     // Raised from 0.77 when the clip was replaced with a closer, brighter
     // aircraft: the services intro measured 4.09:1 against a 4.5 bar over it.
     // The wash is per clip precisely so a swapped clip is a one-number fix.
-    wash: 0.84,
+    wash: 0.86,
   },
   {
     name: "road",
@@ -65,8 +72,14 @@ export const BACKDROPS: Backdrop[] = [
     // The lane table is where the page stops talking about itself and starts
     // listing overland and port-to-port movement.
     anchor: "#lanes",
-    saturation: 0.6,
-    wash: 0.78,
+    // Cut from 0.6 when the clip was regenerated to loop. The replacement
+    // arrives with a green-grey cast rather than the old sandy one, and 0.6
+    // left it measurably twice as far from neutral as the clip it replaced
+    // (chroma distance 3.66 against 1.90). 0.35 puts it back at 2.47 — a
+    // second hue drifting behind graphite type is what the brief rules out,
+    // and green is no more allowed than amber.
+    saturation: 0.35,
+    wash: 0.85,
   },
   {
     name: "sea",
